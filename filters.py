@@ -46,8 +46,8 @@ class CloseFilter(Filter):
     def __init__(self, col1: str, col2: str):
         super().__init__(col1, col2)
 
-    def analyze(self, df: pd.DataFrame, value: str) -> bool:
-        days = int(value)
+    def analyze(self, df: pd.DataFrame, parameter: str) -> bool:
+        days = int(parameter)
         for i in range(days):
             row = df.iloc[-i]
             if row[self.col1] > row[self.col2]:
@@ -72,21 +72,18 @@ class TwistFilter:
 
     def analyze(self, df: pd.DataFrame, parameter: str) -> bool:
         options = parameter.split()
-        try:
-            for option in options:
-                valid = False
-                interval, ref = option[:-1], self.position[option[-1]]
-                ref_index = df.index[ref]
-                start, end = (int(i) for i in interval.split('-'))
-                for i in range(start + ref_index, end + ref_index):
-                    nex = df.loc[i + 1 - W2]
-                    row = df.loc[i - W2]
-                    if (nex['SSAF'] > nex['SSBF']) != (row['SSAF'] > row['SSBF']):
-                        valid = True
-                if not valid:
-                    return False
-        except KeyError:
-            return False
+        for option in options:
+            valid = False
+            interval, ref = option[:-1], self.position[option[-1]]
+            ref_index = df.index[ref]
+            start, end = (int(i) for i in interval.split('-'))
+            for i in range(start + ref_index, end + ref_index):
+                nex = df.loc[i + 1 - W2]
+                row = df.loc[i - W2]
+                if (nex['SSAF'] > nex['SSBF']) != (row['SSAF'] > row['SSBF']):
+                    valid = True
+            if not valid:
+                return False
         return True
 
 

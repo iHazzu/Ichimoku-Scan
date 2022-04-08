@@ -2,6 +2,7 @@ import sys
 import ichi_api
 from asyncio import get_event_loop
 from filters import FILTERS
+from contextlib import suppress
 
 
 async def scan(fils: dict):
@@ -36,12 +37,13 @@ async def scan(fils: dict):
     for exchange in coins:
         remaining[exchange] = []
         for coin in coins[exchange]:
-            for f in fils:
-                fil_fun = FILTERS[f]
-                if not fil_fun.analyze(df=coin["candles"], parameter=fils[f]):
-                    break
-            else:
-                remaining[exchange].append(coin)
+            with suppress(KeyError, IndexError):
+                for f in fils:
+                    fil_fun = FILTERS[f]
+                    if not fil_fun.analyze(df=coin["candles"], parameter=fils[f]):
+                        break
+                else:
+                    remaining[exchange].append(coin)
     if f11_parameter:
         print("- Getting weekly candles to apply F11...")
         binance_symbols = [c["symbol"] for c in remaining["BINANCE"]]
@@ -55,8 +57,9 @@ async def scan(fils: dict):
         for exchange in coins:
             remaining[exchange] = []
             for coin in coins[exchange]:
-                if FILTERS['F11'].analyze(df=coin["candles"], parameter=f11_parameter):
-                    remaining[exchange].append(coin)
+                with suppress(KeyError, IndexError):
+                    if FILTERS['F11'].analyze(df=coin["candles"], parameter=f11_parameter):
+                        remaining[exchange].append(coin)
 
     coin_list = []
     for exchange in remaining:
