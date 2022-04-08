@@ -57,6 +57,7 @@ async def scan(fils: dict):
             for coin in coins[exchange]:
                 if FILTERS['F11'].analyze(df=coin["candles"], parameter=f11_parameter):
                     remaining[exchange].append(coin)
+
     coin_list = []
     for exchange in remaining:
         for coin in remaining[exchange]:
