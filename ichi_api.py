@@ -122,7 +122,7 @@ async def kucoin_candle(symbol: str, timeframe: str, start_at: int, proxy: str, 
 def compute_ichimoku(df: pd.DataFrame):
     df['TK'] = (df['HIGH'].rolling(W1, min_periods=0).max() + df['LOW'].rolling(W1, min_periods=0).min()) / 2
     df['KJ'] = (df['HIGH'].rolling(W2, min_periods=0).max() + df['LOW'].rolling(W2, min_periods=0).min()) / 2
-    df['CK'] = df['PRICE'].shift(-D, fill_value=df['PRICE'].iat[-1])
+    df['CK'] = df['PRICE'].shift(-D)
     df['SSAF'] = ((df['TK'] + df['KJ']) / 2)  # Future
     df['SSA'] = df['SSAF'].shift(W2)    # Present
     df['SSBF'] = ((df['HIGH'].rolling(W3).max() + df['LOW'].rolling(W3).min()) / 2)
