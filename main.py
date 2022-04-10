@@ -9,14 +9,14 @@ async def scan(fils: dict):
     coins = dict()
 
     print("\n- Getting all Binance coins...")
-    binance_symbols = await ichi_api.all_binance_coins()
+    binance_symbols = await ichi_api.all_binance_coins(quote=['USDT', 'BTC'])
     print(f"- {len(binance_symbols)} coins found.")
     print("- Getting Binance coins candles...")
     coins['BINANCE'] = await ichi_api.get_binance_candles(binance_symbols, '1d')
     print(f"- Candles of {len(coins['BINANCE'])} coins extracted.")
 
     print("\n- Getting all Kucoin coins...")
-    kucoin_symbols = await ichi_api.all_kucoin_coins()
+    kucoin_symbols = await ichi_api.all_kucoin_coins(quote=['USDT', 'BTC'])
     print(f"- {len(kucoin_symbols)} coins found.")
     print("- Getting Kucoin coins candles...")
     coins['KUCOIN'] = await ichi_api.get_kucoin_candles(kucoin_symbols, '1day')

@@ -17,11 +17,11 @@ with open("proxies.txt") as file:
     proxies.insert(0, '')     # Localhost
 
 
-async def all_binance_coins() -> list:
+async def all_binance_coins(quote: list) -> list:
     async with ClientSession() as session:
         async with session.get("https://api.binance.com/api/v3/exchangeInfo") as resp:
             info = await resp.json()
-    pairs = [c['symbol'] for c in info['symbols'] if c['quoteAsset'] in ['USDT', 'BTC']]
+    pairs = [c['symbol'] for c in info['symbols'] if c['quoteAsset'] in quote]
     return pairs
 
 
@@ -68,12 +68,12 @@ async def binance_candle(symbol: str, timeframe: str, limit: int, proxy: str, se
     return {'symbol': symbol, 'candles': df}
 
 
-async def all_kucoin_coins() -> list:
+async def all_kucoin_coins(quote: list) -> list:
     async with ClientSession() as session:
         async with session.get("https://openapi-v2.kucoin.com/api/v1/market/allTickers") as i:
             data = await i.json()
         info = data['data']['ticker']
-        pairs = [c['symbol'] for c in info if c['symbol'].split("-")[1] in ['USDT', 'BTC']]
+        pairs = [c['symbol'] for c in info if c['symbol'].split("-")[1] in quote]
         return pairs
 
 
@@ -122,7 +122,7 @@ async def kucoin_candle(symbol: str, timeframe: str, start_at: int, proxy: str, 
 def compute_ichimoku(df: pd.DataFrame):
     df['TK'] = (df['HIGH'].rolling(W1, min_periods=0).max() + df['LOW'].rolling(W1, min_periods=0).min()) / 2
     df['KJ'] = (df['HIGH'].rolling(W2, min_periods=0).max() + df['LOW'].rolling(W2, min_periods=0).min()) / 2
-    df['CK'] = df['PRICE'].shift(-D)
+    df['CK'] = df['PRICE'].shift(-D, fill_value=df['PRICE'].iat[-1])
     df['SSAF'] = ((df['TK'] + df['KJ']) / 2)  # Future
     df['SSA'] = df['SSAF'].shift(W2)    # Present
     df['SSBF'] = ((df['HIGH'].rolling(W3).max() + df['LOW'].rolling(W3).min()) / 2)

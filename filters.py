@@ -23,21 +23,20 @@ class AboveBelowFilter(Filter):
         # value = 0 to below
         # value = 1 to above
         a, b = self.get_values(df)
-        if a >= b and parameter == "1":
-            return True
-        if a <= b and parameter == "0":
+        if (a >= b) == (parameter == "1"):
             return True
         return False
 
 
 class DistanceFilter(Filter):
-    def __init__(self, col1: str, col2: str):
+    def __init__(self, col1: str, col2: str, near: bool):
         super().__init__(col1, col2)
+        self.near = near
 
     def analyze(self, df: pd.DataFrame, parameter: str) -> bool:
         n = float(parameter)    # distance in percentage
         a, b = self.get_values(df)
-        if (a - b)/a < n/100:
+        if ((a - b)/a < n/100) == self.near:
             return True
         return False
 
@@ -99,8 +98,8 @@ FILTERS = {
     'F9': AboveBelowFilter("CK", "SSA"),
     'F10': AboveBelowFilter("CK", "SSB"),
     'F11': AboveBelowFilter("KJ", "PRICE"),
-    'F12': DistanceFilter("CK", "PRICE"),
-    'F13': DistanceFilter("PRICE", "SSB"),
+    'F12': DistanceFilter("CK", "PRICE", False),
+    'F13': DistanceFilter("PRICE", "SSB", True),
     'F14': StockFilter(),
     'F15': CloseFilter("PRICE", "KJ"),
     'F16': TwistFilter()
