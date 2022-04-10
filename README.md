@@ -12,7 +12,7 @@
 - f9: CK is below/above the SSA
 - f10: CK is below/above the SSB
 - f11: The weekly Kijun is below/above the current candle
-- f12 n: distance CK <-> candle = at least n% 
+- f12 n: distance CK <-> candle = more than n% 
 - f13: distance price <-> SSB = at least n%
 - f14 n: max stochastic = n
 - f15 n: number of days that prices have closed below the Kijun = n
