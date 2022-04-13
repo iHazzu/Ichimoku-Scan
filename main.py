@@ -87,6 +87,6 @@ def get_filters() -> dict:
 print("----------| ICHIMOKU SCAN |----------")
 loop = get_event_loop()
 _filters = get_filters()
-print(" ".join(sys.argv[1:]).upper())
+print("  ".join(f'-{k} {_filters[k]}' for k in _filters))
 loop.run_until_complete(scan(_filters))
 

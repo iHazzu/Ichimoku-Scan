@@ -35,7 +35,7 @@ async def get_binance_candles(pairs: list, timeframe: str) -> list:
                 tasks = [binance_candle(p, timeframe, MAX_CANDLES, proxy, session) for p in pairs[i:i + max_req]]
                 ret = await gather(*tasks, return_exceptions=True)
                 for r in ret:
-                    if not isinstance(r, Exception):
+                    if not (isinstance(r, Exception) or r['candles'].empty):
                         candles.append(r)
                 i += max_req
                 if i > len(pairs):
@@ -89,7 +89,7 @@ async def get_kucoin_candles(pairs: list, timeframe: str) -> list:
                 tasks = [kucoin_candle(p, timeframe, start_time, proxy, session) for p in pairs[i:i + max_req]]
                 ret = await gather(*tasks, return_exceptions=True)
                 for r in ret:
-                    if not isinstance(r, Exception):
+                    if not (isinstance(r, Exception) or r['candles'].empty):
                         candles.append(r)
                 i += max_req
                 if i > len(pairs):
