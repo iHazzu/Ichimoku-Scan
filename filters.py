@@ -103,5 +103,5 @@ FILTERS = {
     'F14': StockFilter(),
     'F15': CloseFilter("PRICE", "KJ"),
     'F16': TwistFilter(),
-    'F17': DistanceFilter("TK", "KJ", True)
+    'F17': DistanceFilter("TK", "KJ", False)
 }

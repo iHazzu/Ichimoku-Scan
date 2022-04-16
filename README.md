@@ -17,4 +17,4 @@
 - f14 n: max stochastic = n
 - f15 n: number of days that prices have closed below the Kijun = n
 - f16: there is a twist the cloud at x to y days from the chikou (-f15 3-5 c) or there is a twist the cloud at x to u days from the current candle (-f15 2-6 d)
-- f17: distance TK <-> KJ = less than n%
+- f17: distance TK <-> KJ = more than n%
