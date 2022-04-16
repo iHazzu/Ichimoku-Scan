@@ -13,7 +13,8 @@
 - f10: CK is below/above the SSB
 - f11: The weekly Kijun is below/above the current candle
 - f12 n: distance CK <-> candle = more than n% 
-- f13: distance price <-> SSB = at least n%
+- f13: distance price <-> SSB = less than n%
 - f14 n: max stochastic = n
 - f15 n: number of days that prices have closed below the Kijun = n
-- f16: there is a twist the cloud at x to y days from the chikou (-f15 3-5 c) or there is a twist the cloud at x to u days from the current candle (-f15 2-6 d) 
+- f16: there is a twist the cloud at x to y days from the chikou (-f15 3-5 c) or there is a twist the cloud at x to u days from the current candle (-f15 2-6 d)
+- f17: distance TK <-> KJ = less than n%
