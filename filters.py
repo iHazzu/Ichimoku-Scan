@@ -36,7 +36,7 @@ class DistanceFilter(Filter):
     def analyze(self, df: pd.DataFrame, parameter: str) -> bool:
         n = float(parameter)    # distance in percentage
         a, b = self.get_values(df)
-        if ((a - b)/a < n/100) == self.near:
+        if abs((a - b)/a) < n/100 == self.near:
             return True
         return False
 
