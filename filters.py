@@ -1,5 +1,29 @@
 import pandas as pd
 from ichi_api import D, W2
+import sys
+import re
+
+
+def filters_from_args() -> dict:
+    args = sys.argv
+    fil = dict()
+    i = 1
+    while i < len(args):
+        j = i
+        i += 1
+        while i < len(args) and not args[i].upper().startswith("-F"):
+            i += 1
+        parameters = " ".join(args[j + 1: i]).upper()
+        match = re.search(r' \d+[MHDW]$', parameters)
+        if not match:
+            tf = '1d'
+        else:
+            parameters = parameters[:match.span()[0]]
+            tf = match.group()[1:].lower()
+        tf_fil = fil.get(tf, dict())
+        tf_fil[args[j].upper()[1:]] = parameters
+        fil[tf] = tf_fil
+    return fil
 
 
 class Filter:

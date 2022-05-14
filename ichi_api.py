@@ -5,6 +5,12 @@ from datetime import datetime, timedelta
 
 
 MAX_CANDLES = 110   # Needded candles to coumpute ichimoku
+KUCOIN_TF = {
+    'm': "min",
+    'h': "hour",
+    'd': 'day',
+    'w': 'week'
+}
 
 # Ichimoku parameters
 W1 = 9
@@ -25,18 +31,18 @@ async def all_binance_coins(quote: list) -> list:
     return pairs
 
 
-async def get_binance_candles(pairs: list, timeframe: str) -> list:
+async def get_binance_candles(pairs: list, timeframe: str) -> dict:
     async with ClientSession() as session:
         max_req, cooldown = 1200, 60   # Binance rate limit = 1200 requests / 60 s
         i = 0
-        candles = []
+        candles = {}
         while i < len(pairs):
             for proxy in proxies:
                 tasks = [binance_candle(p, timeframe, MAX_CANDLES, proxy, session) for p in pairs[i:i + max_req]]
                 ret = await gather(*tasks, return_exceptions=True)
                 for r in ret:
                     if not (isinstance(r, Exception) or r['candles'].empty):
-                        candles.append(r)
+                        candles[r['symbol']] = r['candles']
                 i += max_req
                 if i > len(pairs):
                     break
@@ -77,20 +83,20 @@ async def all_kucoin_coins(quote: list) -> list:
         return pairs
 
 
-async def get_kucoin_candles(pairs: list, timeframe: str) -> list:
+async def get_kucoin_candles(pairs: list, timeframe: str) -> dict:
     async with ClientSession() as session:
         max_req, cooldown = 100, 10    # Kucoin rate limit = 100 requests / 10s
         start_time = datetime.utcnow() - MAX_CANDLES * timedelta(days=1)
         start_time = int(start_time.timestamp())
         i = 0
-        candles = []
+        candles = {}
         while i < len(pairs):
             for proxy in proxies:
                 tasks = [kucoin_candle(p, timeframe, start_time, proxy, session) for p in pairs[i:i + max_req]]
                 ret = await gather(*tasks, return_exceptions=True)
                 for r in ret:
                     if not (isinstance(r, Exception) or r['candles'].empty):
-                        candles.append(r)
+                        candles[r['symbol']] = r['candles']
                 i += max_req
                 if i > len(pairs):
                     break
@@ -103,7 +109,7 @@ async def kucoin_candle(symbol: str, timeframe: str, start_at: int, proxy: str, 
     url = "https://openapi-v2.kucoin.com/api/v1/market/candles"
     params = {
         'symbol': symbol,
-        'type': timeframe,
+        'type': f"{timeframe[:-1]}{KUCOIN_TF[timeframe[-1]]}",
         'startAt': start_at
     }
     while True:
