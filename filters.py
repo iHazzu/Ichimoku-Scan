@@ -96,7 +96,6 @@ class TwistFilter:
     def analyze(self, df: pd.DataFrame, parameter: str) -> bool:
         options = parameter.split()
         for option in options:
-            valid = False
             interval, ref = option[:-1], self.position[option[-1]]
             ref_index = df.index[ref]
             start, end = (int(i) for i in interval.split('-'))
@@ -104,8 +103,23 @@ class TwistFilter:
                 nex = df.loc[i + 1 - W2]
                 row = df.loc[i - W2]
                 if (nex['SSAF'] > nex['SSBF']) != (row['SSAF'] > row['SSBF']):
-                    valid = True
-            if not valid:
+                    break
+            else:
+                return False
+        return True
+
+
+class FlatFilter:
+    def __init__(self, col: str, tolerance: float = 1.51):
+        self.col = col
+        self.tolerance = tolerance/100
+        self.start = 2
+
+    def analyze(self, df: pd.DataFrame, parameter: str) -> bool:
+        n = int(parameter)
+        ref = df.iloc[-self.start][self.col]
+        for i in range(self.start+1, n+self.start+1, 1):
+            if abs((df.iloc[-i][self.col] - ref)/ref) > self.tolerance:
                 return False
         return True
 
@@ -121,11 +135,13 @@ FILTERS = {
     'F8': AboveBelowFilter("CK", "PRICE"),
     'F9': AboveBelowFilter("CK", "SSA"),
     'F10': AboveBelowFilter("CK", "SSB"),
-    'F11': AboveBelowFilter("KJ", "PRICE"),
-    'F12': DistanceFilter("CK", "PRICE", False),
-    'F13': DistanceFilter("PRICE", "SSB", True),
-    'F14': StockFilter(),
-    'F15': CloseFilter("PRICE", "KJ"),
-    'F16': TwistFilter(),
-    'F17': DistanceFilter("TK", "KJ", False)
+    'F11': DistanceFilter("CK", "PRICE", False),
+    'F12': DistanceFilter("PRICE", "SSB", True),
+    'F13': StockFilter(),
+    'F14': CloseFilter("PRICE", "KJ"),
+    'F15': TwistFilter(),
+    'F16': DistanceFilter("TK", "KJ", False),
+    'F17': DistanceFilter("PRICE", "KJ", False),
+    'F18': FlatFilter("TK"),
+    'F19': FlatFilter("KJ")
 }

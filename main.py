@@ -1,6 +1,8 @@
 import ichi_api
 from asyncio import get_event_loop
 from filters import FILTERS, filters_from_args
+import sys
+from datetime import datetime
 from contextlib import suppress
 
 
@@ -38,15 +40,17 @@ async def scan(fils: dict):
                             coins[exchange].remove(coin)
                             break
         print(f"- {sum([len(x) for x in coins.values()])} coins remaining.")
-
     print(f"\n- All filters applied.")
+
     result = []
     for exc in coins:
         for coin in coins[exc]:
             result.append(f"{exc}:{coin.replace('-', '')}")
-    with open("result.txt", "w") as file:
-        file.write("\n".join(result))
-    print(f"- Output written in result.txt.")
+    filepath = f"results\\Result_{datetime.now():%Y%m%d-%H%M%S}.txt"
+    with open(filepath, "w") as file:
+        file.write(f"python {' '.join(sys.argv)}\n")  # the command used
+        file.write("\n".join(result))   # the coins found
+    print(f"- Output written in {filepath}.")
 
 
 print("----------| ICHIMOKU SCAN |----------")
